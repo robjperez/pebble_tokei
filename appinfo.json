@@ -1,0 +1,153 @@
+{
+  "uuid": "c5e09fa3-04f4-4e5b-8490-078c57bda8a2",
+  "shortName": "tokei",
+  "longName": "tokei",
+  "companyName": "MeronApps",
+  "versionCode": 1,
+  "versionLabel": "1.0.0",
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": [
+      {
+        "type": "png-trans",
+        "name": "0_36",
+        "file": "png/36/0.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "1_36",
+        "file": "png/36/1.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "2_36",
+        "file": "png/36/2.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "3_36",
+        "file": "png/36/3.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "4_36",
+        "file": "png/36/4.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "5_36",
+        "file": "png/36/5.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "6_36",
+        "file": "png/36/6.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "7_36",
+        "file": "png/36/7.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "8_36",
+        "file": "png/36/8.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "9_36",
+        "file": "png/36/9.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "10_36",
+        "file": "png/36/10.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "h_36",
+        "file": "png/36/h.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "m_36",
+        "file": "png/36/m.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "0_18",
+        "file": "png/18/0.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "1_18",
+        "file": "png/18/1.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "2_18",
+        "file": "png/18/2.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "3_18",
+        "file": "png/18/3.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "4_18",
+        "file": "png/18/4.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "5_18",
+        "file": "png/18/5.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "6_18",
+        "file": "png/18/6.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "7_18",
+        "file": "png/18/7.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "8_18",
+        "file": "png/18/8.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "9_18",
+        "file": "png/18/9.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "10_18",
+        "file": "png/18/10.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "s_18",
+        "file": "png/18/s.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "d_18",
+        "file": "png/18/d.png"
+      },
+      {
+        "type": "png-trans",
+        "name": "mon_18",
+        "file": "png/18/month.png"
+      }
+    ]
+  }
+}
