@@ -37,16 +37,19 @@ static void update_layer_array(BitmapLayer *layer[], GBitmap *unit, int value, G
     bitmap_layer_set_bitmap(layer[layerCounter++], nums[value / 10]);
   }
 
-  if (value > 10) {
+  if (value >= 10) {
     bitmap_layer_set_bitmap(layer[layerCounter++], nums[10]);
   }
 
-  bitmap_layer_set_bitmap(layer[layerCounter++], nums[value % 10]);
+  if ( value % 10 != 0 || value == 0) {
+    bitmap_layer_set_bitmap(layer[layerCounter++], nums[value % 10]);
+  }
+
   bitmap_layer_set_bitmap(layer[layerCounter++], unit);
 
   // Clear remaining layers
   for (int i = layerCounter; i < HMSLAYER_SIZE; i++) {
-    bitmap_layer_set_bitmap(layer[layerCounter], NULL);
+    bitmap_layer_set_bitmap(layer[i], NULL);
   }
 }
 
@@ -68,26 +71,32 @@ static void update_seconds(int sec) {
 
 static void update_daymonth(int day, int month) {
   int arrayIndex = 0;
-  if (month > 10) {
+  if (month >= 10) {
     bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[10]);
   }
 
-  bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[month % 10]);
+  if (month % 10 != 0) {
+    bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[month % 10]);
+  }
+
   bitmap_layer_set_bitmap(dmLayer[arrayIndex++], mon_18);
 
   if (day >= 20) {
     bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[day / 10]);
   }
 
-  if (day > 10) {
+  if (day >= 10) {
     bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[10]);
   }
 
-  bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[day % 10]);
+  if (day % 10 != 0) {
+    bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[day % 10]);
+  }
+
   bitmap_layer_set_bitmap(dmLayer[arrayIndex++], d_18);
 
   // Clear remaining layers
-  for (int i = arrayIndex; i < 6; i++) {
+  for (int i = arrayIndex; i < DMLAYER_SIZE; i++) {
     bitmap_layer_set_bitmap(dmLayer[i], NULL);
   }
 }
