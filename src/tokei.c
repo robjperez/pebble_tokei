@@ -42,7 +42,7 @@ static void update_hour(int hour) {
 }
 
 static void update_layer_array(BitmapLayer *layer[], GBitmap *unit, int value, GBitmap *nums[]) {
-  if (value > 20) {
+  if (value >= 20) {
     bitmap_layer_set_bitmap(layer[0], nums[value / 10]);
     bitmap_layer_set_bitmap(layer[1], nums[10]);
     bitmap_layer_set_bitmap(layer[2], nums[value % 10]);
@@ -75,7 +75,7 @@ static void update_daymonth(int day, int month) {
 
   bitmap_layer_set_bitmap(dmLayer[arrayIndex++], mon_18);
 
-  if (day > 20) {
+  if (day >= 20) {
     bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[day / 10]);
     bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[10]);  
   } else if (day > 10) {
