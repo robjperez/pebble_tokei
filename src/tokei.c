@@ -31,21 +31,22 @@ static int resource18Nums[] = {RESOURCE_ID_0_18_WHITE, RESOURCE_ID_1_18_WHITE, R
 
 
 static void update_layer_array(BitmapLayer *layer[], GBitmap *unit, int value, GBitmap *nums[]) {
+  int layerCounter = 0;
+
   if (value >= 20) {
-    bitmap_layer_set_bitmap(layer[0], nums[value / 10]);
-    bitmap_layer_set_bitmap(layer[1], nums[10]);
-    bitmap_layer_set_bitmap(layer[2], nums[value % 10]);
-    bitmap_layer_set_bitmap(layer[3], unit);
-  } else if (value > 10) {    
-    bitmap_layer_set_bitmap(layer[0], nums[10]);
-    bitmap_layer_set_bitmap(layer[1], nums[value % 10]);
-    bitmap_layer_set_bitmap(layer[2], unit);    
-    bitmap_layer_set_bitmap(layer[3], NULL);
-  } else {
-    bitmap_layer_set_bitmap(layer[0], nums[value]);    
-    bitmap_layer_set_bitmap(layer[1], unit);    
-    bitmap_layer_set_bitmap(layer[2], NULL);
-    bitmap_layer_set_bitmap(layer[3], NULL);
+    bitmap_layer_set_bitmap(layer[layerCounter++], nums[value / 10]);
+  }
+
+  if (value > 10) {
+    bitmap_layer_set_bitmap(layer[layerCounter++], nums[10]);
+  }
+
+  bitmap_layer_set_bitmap(layer[layerCounter++], nums[value % 10]);
+  bitmap_layer_set_bitmap(layer[layerCounter++], unit);
+
+  // Clear remaining layers
+  for (int i = layerCounter; i < HMSLAYER_SIZE; i++) {
+    bitmap_layer_set_bitmap(layer[layerCounter], NULL);
   }
 }
 
@@ -69,18 +70,17 @@ static void update_daymonth(int day, int month) {
   int arrayIndex = 0;
   if (month > 10) {
     bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[10]);
-    bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[month % 10]);    
-  } else {
-    bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[month]);    
   }
 
+  bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[month % 10]);
   bitmap_layer_set_bitmap(dmLayer[arrayIndex++], mon_18);
 
   if (day >= 20) {
     bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[day / 10]);
-    bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[10]);  
-  } else if (day > 10) {
-    bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[10]);        
+  }
+
+  if (day > 10) {
+    bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[10]);
   }
 
   bitmap_layer_set_bitmap(dmLayer[arrayIndex++], nums_18[day % 10]);
