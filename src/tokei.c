@@ -1,17 +1,21 @@
 #include <pebble.h>
 
+#define HMSLAYER_SIZE 4
+#define DMLAYER_SIZE 6
+#define NUMSARRAY_SIZE 11
+
 static Window *window;
-static GBitmap *nums_36[11];
-static GBitmap *nums_18[11];
+static GBitmap *nums_36[NUMSARRAY_SIZE];
+static GBitmap *nums_18[NUMSARRAY_SIZE];
 static GBitmap *h_36;
 static GBitmap *m_36;
 static GBitmap *s_18;
 static GBitmap *mon_18;
 static GBitmap *d_18;
-static BitmapLayer *hLayer[3];
-static BitmapLayer *mLayer[4];
-static BitmapLayer *sLayer[4];
-static BitmapLayer *dmLayer[6];
+static BitmapLayer *hLayer[HMSLAYER_SIZE];
+static BitmapLayer *mLayer[HMSLAYER_SIZE];
+static BitmapLayer *sLayer[HMSLAYER_SIZE];
+static BitmapLayer *dmLayer[DMLAYER_SIZE];
 static int prevMins;
 static int prevHour;
 static int prevDay;
@@ -25,21 +29,6 @@ static int resource18Nums[] = {RESOURCE_ID_0_18_WHITE, RESOURCE_ID_1_18_WHITE, R
   RESOURCE_ID_7_18_WHITE, RESOURCE_ID_8_18_WHITE, RESOURCE_ID_9_18_WHITE, RESOURCE_ID_10_18_WHITE };
 
 
-static void update_hour(int hour) {
-  if (hour > 12 && !clock_is_24h_style()) {
-    hour -= 12;
-  }
-
-  if (hour > 10) {    
-    bitmap_layer_set_bitmap(hLayer[0], nums_36[10]);
-    bitmap_layer_set_bitmap(hLayer[1], nums_36[hour % 10]);
-    bitmap_layer_set_bitmap(hLayer[2], h_36);
-  } else {
-    bitmap_layer_set_bitmap(hLayer[0], nums_36[hour]);
-    bitmap_layer_set_bitmap(hLayer[1], h_36);
-    bitmap_layer_set_bitmap(hLayer[2], NULL);
-  }
-}
 
 static void update_layer_array(BitmapLayer *layer[], GBitmap *unit, int value, GBitmap *nums[]) {
   if (value >= 20) {
@@ -60,8 +49,20 @@ static void update_layer_array(BitmapLayer *layer[], GBitmap *unit, int value, G
   }
 }
 
+static void update_hour(int hour) {
+  if (hour > 12 && !clock_is_24h_style()) {
+    hour -= 12;
+  }
+
+  update_layer_array(hLayer, h_36, hour, nums_36);  
+}
+
 static void update_min(int min) {
   update_layer_array(mLayer, m_36, min, nums_36);
+}
+
+static void update_seconds(int sec) {
+  update_layer_array(sLayer, s_18, sec, nums_18);
 }
 
 static void update_daymonth(int day, int month) {
@@ -91,10 +92,6 @@ static void update_daymonth(int day, int month) {
   }
 }
 
-static void update_seconds(int sec) {
-  update_layer_array(sLayer, s_18, sec, nums_18);
-}
-
 static void handle_tick(struct tm *tick_time, TimeUnits units_changed) { 
   update_seconds(tick_time->tm_sec);
   
@@ -114,27 +111,7 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
   }
 }
 
-static void window_load(Window *window) {
-  Layer *window_layer = window_get_root_layer(window);  
-
-  tick_timer_service_subscribe(SECOND_UNIT, handle_tick);  
-
-  for (int i = 0; i < 3; i++) {    
-    layer_add_child(window_layer, bitmap_layer_get_layer(hLayer[i]));    
-  }
-
-  for (int i = 0; i < 4; i++) {
-    layer_add_child(window_layer, bitmap_layer_get_layer(mLayer[i]));    
-  }
-
-  for (int i = 0; i < 4; i++) {
-    layer_add_child(window_layer, bitmap_layer_get_layer(sLayer[i]));    
-  }
-
-  for (int i = 0; i < 6; i++) {
-    layer_add_child(window_layer, bitmap_layer_get_layer(dmLayer[i]));    
-  }
-
+static void set_current_time() {
   time_t currentTime = time(NULL);
   struct tm* tmTime = localtime(&currentTime); 
   update_hour(tmTime->tm_hour);
@@ -146,24 +123,27 @@ static void window_load(Window *window) {
   prevDay = tmTime->tm_mday;
 }
 
-static void window_unload(Window *window) {
-}
+static void window_load(Window *window) {
+  Layer *window_layer = window_get_root_layer(window);  
 
-static void init(void) {
-  window = window_create();
- 
-  window_set_window_handlers(window, (WindowHandlers) {
-    .load = window_load,
-    .unload = window_unload,
-  });
-  window_set_background_color(window, GColorBlack);
+  tick_timer_service_subscribe(SECOND_UNIT, handle_tick);  
 
-  // Init bitmaps (Lazy load?)
-  for (int i = 0; i < 11; i++) {
-    nums_36[i] = gbitmap_create_with_resource(resource36Nums[i]);
+  for (int i = 0; i < HMSLAYER_SIZE; i++) {    
+    layer_add_child(window_layer, bitmap_layer_get_layer(hLayer[i]));    
+    layer_add_child(window_layer, bitmap_layer_get_layer(mLayer[i]));
+    layer_add_child(window_layer, bitmap_layer_get_layer(sLayer[i]));    
   }
 
-  for (int i = 0; i < 11; i++) {
+  for (int i = 0; i < DMLAYER_SIZE; i++) {
+    layer_add_child(window_layer, bitmap_layer_get_layer(dmLayer[i]));    
+  }
+
+  set_current_time();
+}
+
+static void create_bitmaps() {
+  for (int i = 0; i < NUMSARRAY_SIZE; i++) {
+    nums_36[i] = gbitmap_create_with_resource(resource36Nums[i]);
     nums_18[i] = gbitmap_create_with_resource(resource18Nums[i]);
   }
 
@@ -172,42 +152,85 @@ static void init(void) {
   s_18 = gbitmap_create_with_resource(RESOURCE_ID_s_18_WHITE);
   d_18 = gbitmap_create_with_resource(RESOURCE_ID_d_18_WHITE);
   mon_18 = gbitmap_create_with_resource(RESOURCE_ID_mon_18_WHITE);
+}
 
-  // Init layers
-  for (int i = 0; i < 3; i++) {
+static void create_layers() {
+  static int nums36LayerBoundingSize = 40;
+  static int nums18LayerBoundingSize = 20;
+  static int nums36LayerSize = 36;
+  static int nums18LayerSize = 18;
+  static int startingLayerX = 80;
+  static int startingLayerY = 10;
+  static int startingDateAndSecondsLayerY = 15;
+  static int extraPaddingSecondsLayer = 7;
+
+  for (int i = 0; i < HMSLAYER_SIZE; i++) {
     hLayer[i] = bitmap_layer_create( (GRect) {
-      .origin = { .x = 80, .y = 10 +(i*40)}, .size = { .h = 36, .w = 36}
+      .origin = { 
+        .x = startingLayerX,
+        .y = startingLayerY +(i*nums36LayerBoundingSize)
+      },
+      .size = { 
+        .h = nums36LayerSize,
+        .w = nums36LayerSize
+      }
     });
-  }
 
-  for (int i = 0; i < 4; i++) {
     mLayer[i] = bitmap_layer_create( (GRect) {
-      .origin = { .x = 40, .y = 10 +(i*40)}, .size = { .h = 36, .w = 36}
+      .origin = { 
+        .x = startingLayerX - nums36LayerBoundingSize,
+        .y = startingLayerY +(i*nums36LayerBoundingSize)
+      },
+      .size = { 
+        .h = nums36LayerSize,
+        .w = nums36LayerSize
+      }
     });
-  }
 
-  for (int i = 0; i < 4; i++) {
     sLayer[i] = bitmap_layer_create( (GRect) {
-      .origin = { .x = 15, .y = 15 +(i*20)}, .size = { .h = 18, .w = 18}
+      .origin = { 
+        .x = startingLayerX - nums36LayerBoundingSize - nums18LayerBoundingSize - extraPaddingSecondsLayer,
+        .y = startingDateAndSecondsLayerY +(i*nums18LayerBoundingSize)
+      },
+      .size = { 
+        .h = nums18LayerSize,
+        .w = nums18LayerSize
+      }
     });
   }
 
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < DMLAYER_SIZE; i++) {
     dmLayer[i] = bitmap_layer_create( (GRect) {
-      .origin = { .x = 120, .y = 15 +(i*20)}, .size = { .h = 18, .w = 18}
+      .origin = { 
+        .x = startingLayerX + nums36LayerBoundingSize,
+        .y = startingDateAndSecondsLayerY +(i*nums18LayerBoundingSize)
+      },
+      .size = { 
+        .h = nums18LayerSize,
+        .w = nums18LayerSize
+      }
     });
   }
+}
+
+static void init(void) {
+  window = window_create();
+ 
+  window_set_window_handlers(window, (WindowHandlers) {
+    .load = window_load,    
+  });
+  window_set_background_color(window, GColorBlack);
+
+  create_bitmaps();
+  create_layers();
 
   const bool animated = true;
   window_stack_push(window, animated);
 }
 
-static void deinit(void) { 
-  for (int i = 0; i < 11; i++) {
+static void free_bitmaps() {
+  for (int i = 0; i < NUMSARRAY_SIZE; i++) {
     free(nums_36[i]);
-  }
-
-  for (int i = 0; i < 11; i++) {
     free(nums_18[i]);
   }
 
@@ -216,22 +239,23 @@ static void deinit(void) {
   free(s_18);
   free(mon_18);
   free(d_18);
+}
 
-  for (int i = 0; i < 3; i++) {
+static void destroy_layers() {
+  for (int i = 0; i < HMSLAYER_SIZE; i++) {
     bitmap_layer_destroy(hLayer[i]);
-  }
+    bitmap_layer_destroy(mLayer[i]);
+    bitmap_layer_destroy(sLayer[i]);
+  }  
 
-  for (int i = 0; i < 4; i++) {
-    bitmap_layer_destroy(mLayer[i]);  
-  }
-
-  for (int i = 0; i < 4; i++) {
-    bitmap_layer_destroy(sLayer[i]);  
-  }
-
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < DMLAYER_SIZE; i++) {
     bitmap_layer_destroy(dmLayer[i]);  
   }
+}
+
+static void deinit(void) { 
+  free_bitmaps();
+  destroy_layers();
 
   tick_timer_service_unsubscribe();
   window_destroy(window);
